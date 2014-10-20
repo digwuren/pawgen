@@ -1,0 +1,208 @@
+#! /usr/bin/ruby
+
+# encoding: utf-8
+
+require 'pawgen'
+require 'getoptlong'
+
+VERSION_DATA = "pawgen 1.0.0
+Copyright (C) 2007-2014 by Andres Soolo
+
+Strongly inspired by the pwgen tool written in and copyrighted
+2001-2006 by Theodore T'so who has released the work under the
+GNU GPL v2.
+
+Inspired by a part of the HotDog web application server written
+in 2001 by Andres Soolo and Tõnis Kevvai and copyrighted
+2001-2014 by AS Eesti Telekom (formerly AS Elion, formerly
+formerly AS Eesti Telefon) who have released the work under the
+BSD license.
+
+Licensed under GPLv2+: GNU GPL version 2 or later
+  <http://gnu.org/licenses/gpl.html>
+
+This is free software: you are free to change and
+redistribute it.
+
+There is NO WARRANTY, to the extent permitted by law.
+
+"
+
+USAGE = "Usage: pawgen [options] [password-length [count]]
+
+Generate random passwords, optionally human memory friendly.
+
+--capitalise, --capitalize, -c
+    Include at least one uppercase letter.  (This is the
+    default.)
+
+--no-capitalise, --no-capitalize, -A
+    Do not include uppercase letters.
+
+--digits, --numerals, -n
+    Include at least one Arabic digit.  (This is the default.)
+
+--no-digits, --no-numerals, -0
+    Do not include Arabic digits.
+
+--symbols, -y
+    Include at least one symbol (defined as a non-letter
+    non-digit non-blank printable ASCII character).
+
+--no-symbols
+    Do not include symbols.  (This is the default.)
+
+--anglophonemic, --english, -e
+    Use the Anglophone phonemic generator.  (This is the
+    default.)
+
+--kanaphonemic, --japanese, -j
+    Use the kana mora based (that is, Japanophone) phonemic
+    generator.
+
+--structureless, -s
+    Use the structureless generator.  In this mode, each
+    permitted characters has equal probability of appearing at
+    each position.
+
+--no-ambiguous, -B
+    Exclude letters and digits that may be easily confused with
+    each other such as the letter O and the digit 0 (but also
+    others).
+
+--permit-ambiguous
+    Permit letters and digits that may be easily confused with
+    each other.  (This is the default.)
+
+--no-vowels, -v
+    Exclude vowels.  (The only generator supporting this is
+    --structureless.)
+
+--permit-vowels
+    Permit vowels in the generated passwords.  (This is the
+    default.)
+
+--help
+    Print this usage.
+
+--version
+    Show version data.
+
+
+By default, 12 passwords are is generated if the standard output
+is a teletype and one otherwise (f. e., if it's a pipe).
+
+Report bugs to: <dig@mirky.net>
+
+"
+
+$0 = 'pawgen'
+$count = $stdout.tty? ? 12 : 1
+begin
+  $pawgen = PawGen.new
+
+  GetoptLong.new(
+    ['--capitalise', '--capitalize', '-c',
+        GetoptLong::NO_ARGUMENT],
+    ['--no-capitalise', '--no-capitalize', '-A',
+        GetoptLong::NO_ARGUMENT],
+    ['--digits', '--numerals', '-n',
+        GetoptLong::NO_ARGUMENT],
+    ['--no-digits', '--no-numerals', '-0',
+        GetoptLong::NO_ARGUMENT],
+    ['--symbols', '-y',
+        GetoptLong::NO_ARGUMENT],
+    ['--no-symbols',
+        GetoptLong::NO_ARGUMENT],
+    ['--anglophonemic', '--english', '-e',
+        GetoptLong::NO_ARGUMENT],
+    ['--kanaphonemic', '--japanese', '-j',
+        GetoptLong::NO_ARGUMENT],
+    ['--structureless', '-s',
+        GetoptLong::NO_ARGUMENT],
+    ['--permit-ambiguous',
+        GetoptLong::NO_ARGUMENT],
+    ['--no-ambiguous', '-B',
+        GetoptLong::NO_ARGUMENT],
+    ['--permit-vowels',
+        GetoptLong::NO_ARGUMENT],
+    ['--no-vowels', '-v',
+        GetoptLong::NO_ARGUMENT],
+    ['--help',
+        GetoptLong::NO_ARGUMENT],
+    ['--version',
+        GetoptLong::NO_ARGUMENT],
+  ).each do |opt, arg|
+    case opt
+      when '--capitalise' then
+        $pawgen.include_uppercase!
+      when '--no-capitalise' then
+        $pawgen.no_uppercase!
+      when '--digits' then
+        $pawgen.include_digits!
+      when '--no-digits' then
+        $pawgen.no_digits!
+      when '--symbols' then
+        $pawgen.include_symbols!
+      when '--no-symbols' then
+        $pawgen.no_symbols!
+      when '--anglophonemic' then
+        $pawgen.use_anglophonemic_generator!
+      when '--kanaphonemic' then
+        $pawgen.use_kanaphonemic_generator!
+      when '--structureless' then
+        $pawgen.use_structureless_generator!
+      when '--permit-ambiguous' then
+        $pawgen.do_not_exclude_ambiguous!
+      when '--no-ambiguous' then
+        $pawgen.exclude_ambiguous!
+      when '--permit-vowels' then
+        $pawgen.do_not_exclude_vowels!
+      when '--no-vowels' then
+        $pawgen.exclude_vowels!
+      when '--help' then
+        puts USAGE
+        exit 0
+      when '--version' then
+        puts VERSION_DATA 
+        exit 0
+      else
+        raise 'assertion failed'
+    end
+  end
+
+  if ARGV.length >= 1 then
+    length = ARGV[0].to_i
+    unless length >= 1 then
+      $stderr.puts "pawgen: invalid password length"
+      exit 1
+    end
+    $pawgen.length = length
+  end
+
+  if ARGV.length >= 2 then
+    $count = ARGV[1].to_i
+    unless $count >= 1 then
+      $stderr.puts "pawgen: invalid password count"
+      exit 1
+    end
+  end
+
+  if ARGV.length > 2 then
+    $stderr.puts "pawgen: too many arguments"
+    exit 1
+  end
+
+rescue GetoptLong::Error => e
+  # no need to display; it has already been reported
+  exit 1
+end
+
+begin
+  $count.times do
+    puts $pawgen.generate
+  end
+rescue StandardError => e
+  $stderr.puts "pawgen: #{e}"
+  exit 1
+end

@@ -1,0 +1,149 @@
+This is PawGen, a password generation library capable of
+creating Anglophone phonemic, Kana-based phonemic, and
+structureless passwords.
+
+PawGen is implemented in pure Ruby.
+
+A command line tool is included, too.
+
+
+== Sample usage
+
+  require 'pawgen'
+
+  pwgen = PawGen.new.
+      set_length!(16).
+      include_symbols!.
+      no_uppercase!.
+      exclude_ambiguous!
+
+  10.times do
+    puts pwgen.anglophonemic
+  end
+
+
+== Classes and methods
+
+The core class is called [[PawGen]]; it encapsulates the
+password generation options.  A set of (more or less) reasonable
+defaults is provided.  Optionally after manipulating the options
+within, calling [[PawGen#generate]] will generate a random
+password, with entropy derived from
+[[SecureRandom::random_number]], and return it as a [[String]]
+object.  Alternatively, you may call the generation method --
+[[PawGen#random]], [[PawGen#anglophonemic]], or
+[[PawGen#kanaphonemic]] -- directly.
+
+=== Constructor
+
+The constructor [[PawGen::new]] takes no arguments and returns a
+password generator of default options.
+
+=== Options
+
+- Whether to include uppercase letters:
+
+  - [[include_uppercase!]] requires at least one;
+
+  - [[no_uppercase!]] prohibits all;
+
+  - [[include_uppercase?]] queries the current status.
+
+- Whether to include digits:
+
+  - [[include_digits!]] requires at least one;
+
+  - [[no_digits!]] prohibits all;
+
+  - [[include_digits?]] queries the current status.
+
+- Whether to include non-letter non-digit printable ASCII
+  characters:
+
+  - [[include_symbols!]] requires at least one;
+
+  - [[no_symbols!]] prohibits all;
+    characters in them.
+
+  - [[include_symbols?]] queries the current status.
+
+- Whether to permit letters or digits that may be easily
+  confused with each other:
+
+  - [[exclude_ambiguous!]] prohibits all;
+
+  - [[do_not_exclude_ambiguous!]] or [[dont_exclude_ambiguous!]]
+    permits them;
+
+  - [[exclude_ambiguous?]] queries the current status.
+
+- Whether to permit vowels (note that only the [[random]]
+  generator supports generating vowel-less passwords):
+
+  - [[exclude_vowels!]] prohibits all;
+
+  - [[do_not_exclude_vowels!]] or [[dont_exclude_vowels!]]
+    permits them;
+
+  - [[exclude_vowels?]] queries the current status.
+
+- How long a password should be:
+
+  - [[set_length!(length)]] sets the expected password length
+    and return the [[PawGen]] instance for method call chaining;
+
+  - [[length=(length)]] sets the expected password length and
+    returns it, as expected from assignment operators;
+
+  - [[length]] queries the current status.
+
+- Which generator should be invoked when [[generate]] is called:
+
+  - [[use_structureless_generator!]] uses [[structureless]],
+    which picks each permitted character at equal probability
+    for each position.  This is the only generator able to
+    generate passwords when vowel exclusion is required.
+
+  - [[use_anglophonemic_generator!]] uses [[anglophonemic]],
+    which roughly follows Anglophone syllable model in
+    generating passwords pronounceable to English speakers.
+    This generator is only able to generate passwords of 5
+    characters or more.
+
+  - [[use_kanaphonemic_generator!]] uses [[kanaphonemic]], which
+    roughly follows the Japanese mora model.  Such passwords may
+    also be more convenient than Anglophone phonemic passwords
+    for speakers of languages such as Estonian, Hawaiian, and
+    Russian.
+
+The generators can also be called directly.
+
+
+== Copyright, credits, and licensing
+
+PawGen is copyright (c) 2007-2014 by Andres Soolo.
+
+
+PawGen is strongly inspired by (and includes the Anglophone
+phoneme table from) pwgen.
+
+pwgen is copyright (c) 2001-2006 by Theodore Ts'o who used C and
+released the work under the GNU GPL v2.
+
+
+The kanaphonemic password generator is inspired by an unnamed
+Estonian language friendly phonemic password generator written
+by Andres Soolo and Tõnis Kevvai in Python as a part of the
+HotDog web application server in 2001.
+
+HotDog is copyright (c) 2001-2014 by AS Eesti Telekom (formerly
+AS Elion, formerly formerly AS Eesti Telefon) who have released
+the work under the BSD license.
+
+
+PawGen is probably sufficiently different from its predecessors
+to qualify as an unrelated work under most countries' copyright
+laws.  Nevertheless, following the GPL's spirit, PawGen is
+hereby published as free software under the terms and conditions
+of the GNU General Public License version 2 or (at your option)
+any later version.

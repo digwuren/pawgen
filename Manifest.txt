@@ -1,0 +1,7 @@
+GPL-2
+GPL-3
+Manifest.txt
+README
+bin/pawgen
+lib/pawgen.rb
+pawgen.gemspec
