@@ -1,5 +1,6 @@
 GPL-2
 GPL-3
+History.txt
 Manifest.txt
 README
 bin/pawgen

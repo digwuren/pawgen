@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name = 'pawgen'
-  s.version = '1.0.0'
-  s.date = '2014-10-20'
+  s.version = '1.0.1'
+  s.date = '2014-11-01'
   s.homepage = 'https://github.com/digwuren/pawgen'
   s.summary = 'A password generator'
   s.author = 'Andres Soolo'

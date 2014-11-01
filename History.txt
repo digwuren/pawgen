@@ -1,0 +1,7 @@
+=== 1.0.1 / 2014-11-01
+
+* Fixed a bug of the structureless generator never using uppercase letters
+
+=== 1.0.0 / 2014-10-20
+
+* First public release

@@ -142,6 +142,7 @@ class PawGen
 
   def structureless
     charset = LOWERCASE
+    charset += UPPERCASE if include_uppercase?
     charset += DIGITS if include_digits?
     charset += SYMBOLS if include_symbols?
     charset = charset.split('')
